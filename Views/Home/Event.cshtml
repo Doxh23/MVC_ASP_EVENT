@@ -1,5 +1,7 @@
 ﻿@model MVC_ASP_EVENT.Models.EvenAllDay
-
+@using MVC_ASP_EVENT.tools
+@using MVC_ASP_EVENT.Models;
+@inject SessionManager sess
 @{
     ViewData["Title"] = "Event";
 }
@@ -53,6 +55,18 @@
             @for(int i = 1; i <=  Model.EventTypeDay.Count; i++)
             {
                 <text>jour @i :  @Model.EventTypeDay[i-1].Type.Name </text>
+
+               if( ((List<Participate>)ViewBag.MyPart).Find(x => (x.Date == Model.EventTypeDay[i - 1].date) && (x.Id == sess.ConnectedUser.Id ))is  null)
+                { 
+                 
+                    @Html.ActionLink("inscription", "inscriptionDay","User", new {  id=Model.EventTypeDay[i-1].EventId, date = Model.EventTypeDay[i-1].date })
+
+                }
+                else
+                {
+                    @Html.ActionLink("desinscription", "desincription","User", new {  id=Model.EventTypeDay[i-1].EventId, date = Model.EventTypeDay[i-1].date })
+
+                }
                 <br />
             }
         </dd>

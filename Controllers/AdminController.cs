@@ -13,10 +13,12 @@ namespace MVC_ASP_EVENT.Controllers
     {
         // GET: AdminController
         private readonly HttpClient _httpClient;
-        public AdminController(HttpClient httpClient)
+        private readonly SessionManager _sessionManager;
+        public AdminController(HttpClient httpClient, SessionManager sessionManager)
         {
 
             _httpClient = httpClient;
+            _sessionManager = sessionManager;
         }
         public ActionResult Index()
         {
@@ -34,13 +36,13 @@ namespace MVC_ASP_EVENT.Controllers
             try
             {
                 List<Status> list = new List<Status>();
-                list = callAPI.getResult(_httpClient, "Status",typeof(List<Status>));
+                list = callAPI.getResult(_httpClient, "Status",typeof(List<Status>),_sessionManager);
                 Status status = list.First(x => x.Name == "not started");
                 e.status = status;
-                bool success = callAPI.postData(_httpClient, "Event", e);
+                bool success = callAPI.postData(_httpClient, "Event", e,_sessionManager);
                 if (success)
                 {
-                   List<Event> events = callAPI.getResult(_httpClient, "Event", typeof(List<Event>));
+                   List<Event> events = callAPI.getResult(_httpClient, "Event", typeof(List<Event>),_sessionManager);
                     Event newEvent = events.Last();
                     return RedirectToAction("CreateDay",newEvent);
                 }
@@ -60,7 +62,7 @@ namespace MVC_ASP_EVENT.Controllers
         public IActionResult CreateDay(Event newEvent)
         {
             ViewBag.Days = ((DateTime.Parse(newEvent.EndDate) - DateTime.Parse(newEvent.StartDate)).Days);
-            ViewBag.Type = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>));
+            ViewBag.Type = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>), _sessionManager);
 
 
             return View(newEvent);
@@ -68,11 +70,11 @@ namespace MVC_ASP_EVENT.Controllers
         [HttpPost]
         public IActionResult CreateDay(List<string> type)
         {
-            List<Models.Type> types = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>));
+            List<Models.Type> types = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>), _sessionManager);
             for (int i=1; i<= type.Count; i++)
             {
                 Models.Type result = types.First(x => x.Name == type[i-1]);
-                List<Event> list = callAPI.getResult(_httpClient, "Event", typeof(List<Event>));
+                List<Event> list = callAPI.getResult(_httpClient, "Event", typeof(List<Event>), _sessionManager);
                 Models.Event createdEvent = list.Last();
                 EventTypeDay eventDay = new EventTypeDay()
                 {
@@ -82,7 +84,7 @@ namespace MVC_ASP_EVENT.Controllers
                     
                 };
 
-                callAPI.postData(_httpClient, "EventTypeDay", eventDay);
+                callAPI.postData(_httpClient, "EventTypeDay", eventDay, _sessionManager);
             }
 
             return RedirectToAction("Index","Home");

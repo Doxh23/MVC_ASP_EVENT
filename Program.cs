@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MVC_ASP_EVENT.tools;
+using System.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 

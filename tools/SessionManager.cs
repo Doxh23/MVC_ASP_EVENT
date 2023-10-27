@@ -13,7 +13,7 @@ namespace MVC_ASP_EVENT.tools
 
         private readonly ISession _session;
         private readonly HttpClient _httpClient;
-        public SessionManager(IHttpContextAccessor httpContext,HttpClient http)
+        public SessionManager(IHttpContextAccessor httpContext, HttpClient http)
         {
             _session = httpContext.HttpContext.Session;
             _httpClient = http;
@@ -22,6 +22,7 @@ namespace MVC_ASP_EVENT.tools
         public void settingToken(string token)
         {
             this.token = token;
+
             UserDTO user = null;
             int result = int.Parse(new JwtSecurityTokenHandler().ReadJwtToken(token).Claims.First(c => c.Type == ClaimTypes.Sid).Value);
             Console.WriteLine($"id : -{result}");
@@ -29,13 +30,16 @@ namespace MVC_ASP_EVENT.tools
             {
                 if (response.IsSuccessStatusCode)
                 {
-                     user = JsonConvert.DeserializeObject<UserDTO>(response.Content.ReadAsStringAsync().Result);
+                    user = JsonConvert.DeserializeObject<UserDTO>(response.Content.ReadAsStringAsync().Result);
                 }
             }
             ConnectedUser = user;
 
-          
+
         }
+        public void Logout(){
+            _session.Clear();
+            }
 
         public string? token
         {

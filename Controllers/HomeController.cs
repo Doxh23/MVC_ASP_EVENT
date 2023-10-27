@@ -35,10 +35,10 @@ namespace MVC_ASP_EVENT.Controllers
         public IActionResult Events()
         {
             List<EvenAllDay> list = new List<EvenAllDay>();
-            List<Models.Event> events = callAPI.getResult(_httpClient, "Event", typeof(List<Event>));
+            List<Models.Event> events = callAPI.getResult(_httpClient, "Event", typeof(List<Event>),_session);
             foreach (Models.Event item in events)
             {
-                List<EventTypeDay> eventsdays = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{item.Id}", typeof(List<EventTypeDay>));
+                List<EventTypeDay> eventsdays = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{item.Id}", typeof(List<EventTypeDay>),_session);
                 list.Add(new EvenAllDay()
                 {
                     Event = item,
@@ -54,10 +54,12 @@ namespace MVC_ASP_EVENT.Controllers
         public IActionResult Event(int id)
         {
 
-            Event ev = callAPI.getResult(_httpClient, $"Event/{id}", typeof(Event));
-
-            List<EventTypeDay> eventsdays = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{id}", typeof(List<EventTypeDay>));
-            ViewBag.Comments = callAPI.getResult(_httpClient, $"Comments/event/{id}", typeof(List<Comments>));
+            Event ev = callAPI.getResult(_httpClient, $"Event/{id}", typeof(Event), _session);
+            List<Participate> myPart = ((List<Participate>)callAPI.getResult(_httpClient, $"Participate/{id}", typeof(List<Participate>), _session)).ToList();
+            ViewBag.MyPart = myPart;
+            Console.WriteLine(myPart.Count);
+            List<EventTypeDay> eventsdays = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{id}", typeof(List<EventTypeDay>), _session);
+            ViewBag.Comments = callAPI.getResult(_httpClient, $"Comments/event/{id}", typeof(List<Comments>), _session  );
 
 
 
@@ -80,7 +82,7 @@ namespace MVC_ASP_EVENT.Controllers
                 Content = comment,
                 PostDate = DateTime.Now.ToString()
             };
-            bool sucess = callAPI.postData(_httpClient, "Comments", comm);
+            bool sucess = callAPI.postData(_httpClient, "Comments", comm,_session);
                 if (sucess)
                 {
                     return RedirectToAction("Event", new { id = EventId });

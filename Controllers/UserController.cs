@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MVC_ASP_EVENT.Models;
 using MVC_ASP_EVENT.tools;
 using Newtonsoft.Json;
 using NuGet.Common;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 
 namespace MVC_ASP_EVENT.Controllers
 {
@@ -22,16 +25,12 @@ namespace MVC_ASP_EVENT.Controllers
         {
             return View();
         }
-        public IActionResult Inscription(int id)
-        {
-            List<EventTypeDay> result = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{id}", typeof(List<EventTypeDay>));
-            return View(result);
-        }
+      
         public IActionResult InscriptionDay(int id,string date)
         {
             Console.WriteLine(date);
             Participate par = new Participate() { 
-                Id = 2,
+                Id = _sessionManager.ConnectedUser.Id,
             EventId = id,
             Date = date,
             Presence = "ghhhhh"
@@ -39,12 +38,17 @@ namespace MVC_ASP_EVENT.Controllers
 
             try
             {
-              callAPI.postData(_httpClient, "Participate", par);
+              callAPI.postData(_httpClient, "Participate", par, _sessionManager);
             }catch(Exception ex)
             {
                 
             }
-            return RedirectToAction("Inscription", new {id = id});
+            return RedirectToAction("Event","Home", new {id = id});
+        }
+        public IActionResult desinscriptionDay(int id, string date)
+        {
+           //TODOOOOOOOOOOOOO
+            return RedirectToAction("Event", "Home", new { id = id });
         }
         // GET: UserController/Details/5
         public ActionResult Login()
@@ -59,9 +63,10 @@ namespace MVC_ASP_EVENT.Controllers
             try
             {
 
-                string token = callAPI.Login(_httpClient, "User/Login", u);
+                string token = callAPI.Login(_httpClient, "User/Login", u,_sessionManager);
                 if (!string.IsNullOrWhiteSpace(token))
                 {
+                    JwtSecurityToken jwt = new JwtSecurityToken(token);
                     _sessionManager.settingToken(token);
                     return RedirectToAction("Index", "Home");
 
@@ -80,9 +85,10 @@ namespace MVC_ASP_EVENT.Controllers
             }
         }
         // GET: UserController/Create
-        public ActionResult disconnect()
+        public ActionResult Logout()
         {
-            return View();
+            _sessionManager.Logout();
+            return RedirectToAction("Index","Home");
         }
 
 
@@ -90,7 +96,7 @@ namespace MVC_ASP_EVENT.Controllers
         public ActionResult Register()
         {
 
-            ViewBag.Roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>));
+            ViewBag.Roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>), _sessionManager);
                return View();
 
         }
@@ -99,11 +105,11 @@ namespace MVC_ASP_EVENT.Controllers
         {
 
             User user = u;
-            List<Role> roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>));
+            List<Role> roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>), _sessionManager);
             user.Role = roles.FirstOrDefault(x => x.Name == role).Id;
             try
             {
-                callAPI.postData(_httpClient, "User/Register",user);
+                callAPI.postData(_httpClient, "User/Register",user, _sessionManager );
                 return RedirectToAction("Index", "Home");
 
             }
