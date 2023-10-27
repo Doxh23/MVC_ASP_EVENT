@@ -1,0 +1,80 @@
+﻿@model MVC_ASP_EVENT.Models.User
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<h4>User</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LoginEmail" class="control-label"></label>
+                <input asp-for="LoginEmail" class="form-control" />
+                <span asp-validation-for="LoginEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GSM" class="control-label"></label>
+                <input asp-for="GSM" class="form-control" />
+                <span asp-validation-for="GSM" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NickName" class="control-label"></label>
+                <input asp-for="NickName" class="form-control" />
+                <span asp-validation-for="NickName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Allergie" class="control-label"></label>
+                <input asp-for="Allergie" class="form-control" />
+                <span asp-validation-for="Allergie" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InfoSupp" class="control-label"></label>
+                <input asp-for="InfoSupp" class="form-control" />
+                <span asp-validation-for="InfoSupp" class="text-danger"></span>
+            </div>
+
+            @foreach (var item in ViewBag.Roles)
+            {
+                <div class="form-group">
+                    <input type="radio" value="@item.Name" name="role">
+                    <label> @item.Name</label>
+
+                </div>
+
+            }
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
