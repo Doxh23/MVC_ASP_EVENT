@@ -1,0 +1,80 @@
+﻿@model MVC_ASP_EVENT.Models.EvenAllDay
+
+@{
+    ViewData["Title"] = "Event";
+}
+
+<h1>Event</h1>
+
+<div>
+    <h4>Event</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.StartDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.StartDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.EndDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.EndDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.location)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.location)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Event.Adress)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Event.Adress)
+        </dd>
+        <dt class="col-sm-2">
+            nombre de jour : @Model.EventTypeDay.Count   
+        </dt>
+        <dd class="col-sm-10">
+            @for(int i = 1; i <=  Model.EventTypeDay.Count; i++)
+            {
+                <text>jour @i :  @Model.EventTypeDay[i-1].Type.Name </text>
+                <br />
+            }
+        </dd>
+
+    </dl>
+    <hr />
+    @foreach(var item in ViewBag.Comments)
+    {
+        <div>@item.PostDate  @item.Nickname  :</div>
+        
+        <div>@item.Content </div>
+
+    }
+
+</div>
+
+
+Ajouter un commentaire
+<form asp-action="addComments">
+
+   <textarea type="text" name="comment" runat="server"> </textarea>
+    <input type="hidden" value="@Model.Event.Id" name="EventId" class="btn btn-primary" />
+    <input type="submit" value="Create" class="btn btn-primary" />
+
+</form>

@@ -65,14 +65,15 @@
                         <p> day : @i  : @item.EventTypeDay[i-1].Type.Name</p>
                     }
                 </td>
-                @if(session.ConnectedUser is not null)
-                {
+              
                     <td>
-
-                        @Html.ActionLink("S'inscrire", "Inscription","User", new { id = item.Event.Id }) |
-
+                        @Html.ActionLink("details","Event", new { id = item.Event.Id})
+                    @if (session.ConnectedUser is not null)
+                    {
+                        <text>  / </text> @Html.ActionLink("S'inscrire", "Inscription","User", new { id = item.Event.Id })
+                    }
                     </td>
-                }
+                
                
             </tr>
         }

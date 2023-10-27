@@ -7,13 +7,13 @@ namespace MVC_ASP_EVENT.tools
     static public class callAPI
     {
 
-      static public  string getResult(HttpClient http, string api )
+      static public  dynamic getResult(HttpClient http, string api,Type type )
         {
            
             
             using (HttpResponseMessage response = http.GetAsync(api).Result)
             {
-                return response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject(response.Content.ReadAsStringAsync().Result,type);
             }
         }
 
@@ -49,8 +49,15 @@ namespace MVC_ASP_EVENT.tools
             {
                 try
                 {
-                    Console.WriteLine(response.Content.ReadAsStringAsync().Result);
-                    return response.Content.ReadAsStringAsync().Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine(response.Content.ReadAsStringAsync().Result);
+                        return response.Content.ReadAsStringAsync().Result;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -24,7 +24,7 @@ namespace MVC_ASP_EVENT.Controllers
         }
         public IActionResult Inscription(int id)
         {
-            List<EventTypeDay> result = JsonConvert.DeserializeObject<List<EventTypeDay>>(callAPI.getResult(_httpClient,$"EventTypeDay/getByEvent/{id}"));
+            List<EventTypeDay> result = callAPI.getResult(_httpClient, $"EventTypeDay/getByEvent/{id}", typeof(List<EventTypeDay>));
             return View(result);
         }
         public IActionResult InscriptionDay(int id,string date)
@@ -60,11 +60,21 @@ namespace MVC_ASP_EVENT.Controllers
             {
 
                 string token = callAPI.Login(_httpClient, "User/Login", u);
-                _sessionManager.settingToken(token);
-            
-                return RedirectToAction("Index","Home");
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    _sessionManager.settingToken(token);
+                    return RedirectToAction("Index", "Home");
 
-            }catch(Exception e)
+                }
+                else
+                {
+                    return RedirectToAction("Login");
+
+                }
+
+
+            }
+            catch(Exception e)
             {
                 return RedirectToAction("Login");
             }
@@ -80,7 +90,7 @@ namespace MVC_ASP_EVENT.Controllers
         public ActionResult Register()
         {
 
-            ViewBag.Roles = JsonConvert.DeserializeObject<List<Role>>(callAPI.getResult(_httpClient, "Role"));
+            ViewBag.Roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>));
                return View();
 
         }
@@ -89,7 +99,7 @@ namespace MVC_ASP_EVENT.Controllers
         {
 
             User user = u;
-            List<Role> roles = JsonConvert.DeserializeObject<List<Role>>(callAPI.getResult(_httpClient, "Role"));
+            List<Role> roles = callAPI.getResult(_httpClient, "Role", typeof(List<Role>));
             user.Role = roles.FirstOrDefault(x => x.Name == role).Id;
             try
             {

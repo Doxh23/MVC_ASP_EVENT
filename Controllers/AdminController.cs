@@ -34,13 +34,14 @@ namespace MVC_ASP_EVENT.Controllers
             try
             {
                 List<Status> list = new List<Status>();
-                list = JsonConvert.DeserializeObject<List<Status>>(callAPI.getResult(_httpClient, "Status"));
+                list = callAPI.getResult(_httpClient, "Status",typeof(List<Status>));
                 Status status = list.First(x => x.Name == "not started");
                 e.status = status;
                 bool success = callAPI.postData(_httpClient, "Event", e);
                 if (success)
                 {
-                    Event newEvent = JsonConvert.DeserializeObject<List<Event>>(callAPI.getResult(_httpClient, "Event")).Last();
+                   List<Event> events = callAPI.getResult(_httpClient, "Event", typeof(List<Event>));
+                    Event newEvent = events.Last();
                     return RedirectToAction("CreateDay",newEvent);
                 }
                 else
@@ -59,7 +60,7 @@ namespace MVC_ASP_EVENT.Controllers
         public IActionResult CreateDay(Event newEvent)
         {
             ViewBag.Days = ((DateTime.Parse(newEvent.EndDate) - DateTime.Parse(newEvent.StartDate)).Days);
-            ViewBag.Type = JsonConvert.DeserializeObject<List<Models.Type>>(callAPI.getResult(_httpClient, "EventType"));
+            ViewBag.Type = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>));
 
 
             return View(newEvent);
@@ -67,11 +68,12 @@ namespace MVC_ASP_EVENT.Controllers
         [HttpPost]
         public IActionResult CreateDay(List<string> type)
         {
-            List<Models.Type> types = JsonConvert.DeserializeObject<List<Models.Type>>(callAPI.getResult(_httpClient, "EventType"));
+            List<Models.Type> types = callAPI.getResult(_httpClient, "EventType", typeof(List<Models.Type>));
             for (int i=1; i<= type.Count; i++)
             {
                 Models.Type result = types.First(x => x.Name == type[i-1]);
-                Models.Event createdEvent = JsonConvert.DeserializeObject<List<Event>>(callAPI.getResult(_httpClient, "Event")).Last();
+                List<Event> list = callAPI.getResult(_httpClient, "Event", typeof(List<Event>));
+                Models.Event createdEvent = list.Last();
                 EventTypeDay eventDay = new EventTypeDay()
                 {
                     date = $"{DateTime.Parse(createdEvent.StartDate).AddDays(i)}",
